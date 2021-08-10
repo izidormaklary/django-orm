@@ -48,8 +48,10 @@ def student_details(request, student_id):
 
 
 def student_add(request):
+
     if 'authenticated' not in request.session:
         return redirect('login')
+
     form = StudentForm(request.POST or None)
 
     if form.is_valid():
@@ -62,6 +64,10 @@ def student_add(request):
 
 
 def student_edit(request, student_id):
+
+    if 'authenticated' not in request.session:
+        return redirect('login')
+
     student = get_object_or_404(Student, pk=student_id)
     form = StudentForm(request.POST or None, instance=student)
     if form.is_valid():
@@ -74,6 +80,10 @@ def student_edit(request, student_id):
 
 
 def teacher_add(request):
+
+    if 'authenticated' not in request.session:
+        return redirect('login')
+
     form = TeacherForm(request.POST or None)
 
     if form.is_valid():
@@ -86,6 +96,10 @@ def teacher_add(request):
 
 
 def teacher_edit(request, teacher_id):
+
+    if 'authenticated' not in request.session:
+        return redirect('login')
+
     teacher = get_object_or_404(Teacher, pk=teacher_id)
     form = TeacherForm(request.POST or None, instance=teacher)
 
@@ -134,3 +148,8 @@ def register(request):
         return redirect('index')
     template = loader.get_template('user/register.html')
     return HttpResponse(template.render({'form': form}, request))
+
+def logout(request):
+    request.session.flush()
+
+    return redirect('login')

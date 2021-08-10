@@ -8,6 +8,13 @@
    {% endblock %}</title>
 </head>
 <body>
+<nav>
+    <ul>
+        <li>
+            <a href="{% url 'logout' %}">log out</a>
+        </li>
+    </ul>
+</nav>
 {% block content %}
     <h1> Welcome to the homepage</h1>
 {% endblock %}
