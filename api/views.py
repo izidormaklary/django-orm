@@ -1,9 +1,11 @@
 from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from django.urls import reverse
-from django.shortcuts import redirect
+from django.template import loader
+from django.shortcuts import redirect, render
 
 from .encoders import StudentSerializer, TeacherSerializer
+from .forms import StudentForm
 from .models import Teacher, Student
 
 
@@ -42,3 +44,14 @@ def student_details(request, student_id):
         'id', 'firstName', 'lastName', 'email', 'teacher', 'city', 'street', 'house_number', 'zip_code', 'city'
     )
     return JsonResponse(student,  safe=False, encoder=StudentSerializer)
+
+
+def student_add(request):
+    form = StudentForm(request.POST or None)
+
+    if form.is_valid():
+        student_model = form.save()
+        id = str(student_model.pk)
+        return redirect('student_detail', student_id=id)
+    template = loader.get_template('student/addstudent.html')
+    return HttpResponse(template.render({'form': form},request))
