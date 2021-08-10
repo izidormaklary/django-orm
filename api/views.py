@@ -48,6 +48,8 @@ def student_details(request, student_id):
 
 
 def student_add(request):
+    if 'authenticated' not in request.session:
+        return redirect('login')
     form = StudentForm(request.POST or None)
 
     if form.is_valid():
@@ -97,6 +99,7 @@ def teacher_edit(request, teacher_id):
 
 
 def login(request):
+
     form = LoginForm(request.POST or None)
     context = {'form': form}
     if form.is_valid():
@@ -105,15 +108,18 @@ def login(request):
         fetched_user = User.objects.filter(userName=user_model.userName)
         # first checking whether user exists
         if fetched_user:
+
             # getting password password from the form, then the hashed from the query
             login_pw = user_model.password
-            hashed_pw = getattr(fetched_user, 'password')
+            hashed_pw = getattr(fetched_user[0], 'password')
             # crosschecking passwords
             if check_password(login_pw, hashed_pw):
                 # login success
                 # todo put the user in session with giving id
+                request.session['authenticated'] = True
+                request.session.set_expiry(0)
                 return HttpResponse('<h1>You are logged in</h1>')
-            #
+        #in case login failed
         context = {'form': form, 'error': "wrong username or password"}
     template = loader.get_template('user/login.html')
     return HttpResponse(template.render(context, request))
