@@ -3,10 +3,11 @@ from django.core import serializers
 from django.urls import reverse
 from django.template import loader
 from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib.auth.hashers import check_password, make_password
 
 from .encoders import StudentSerializer, TeacherSerializer
 from .forms import StudentForm, TeacherForm, RegistrationForm, LoginForm
-from .models import Teacher, Student
+from .models import Teacher, Student, User
 
 
 def index(request):
@@ -97,14 +98,27 @@ def teacher_edit(request, teacher_id):
 
 def login(request):
     form = LoginForm(request.POST or None)
+    context = {'form': form}
+    if form.is_valid():
+        user_model = form.save(commit=False)
+        fetched_user = get_object_or_404(User, userName=user_model.userName)
+
+        login_pw = user_model.password
+        hashed_pw = getattr(fetched_user, 'password')
+
+        if check_password(login_pw, hashed_pw):
+            return HttpResponse('<h1>You are logged in</h1>')
+        context = {'form': form, 'error': "wrong username or password"}
     template = loader.get_template('user/login.html')
-    return HttpResponse(template.render({'form': form}), request)
+    return HttpResponse(template.render(context, request))
 
 
 def register(request):
     form = RegistrationForm(request.POST or None)
     if form.is_valid():
+        user_model = form.save(commit=False)
+        user_model.password = make_password(user_model.password)
         form.save()
-        redirect('index')
+        return redirect('index')
     template = loader.get_template('user/register.html')
-    return HttpResponse(template.render({'form': form}), request)
+    return HttpResponse(template.render({'form': form}, request))

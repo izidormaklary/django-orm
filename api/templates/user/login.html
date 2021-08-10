@@ -1,9 +1,13 @@
-{% extends "index.html" %}
+{% extends 'index.html' %}
 {% block title %}Login{% endblock %}
 {% block content %}
+    <h1>login</h1>
     <form action="{% url 'login' %}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
+    {% if error %}
+        <div> {{ error }}</div>
+    {% endif %}
 {% endblock %}
