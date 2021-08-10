@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+{% block title %}Edit student{% endblock %}
+{% block content %}
+    <h1>
+    Editing student: {{ student.firstName | title }}  {{  student.lastName | title }}
+    </h1>
+    <form action="{% url 'student_edit' student_id=student.id %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

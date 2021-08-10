@@ -27,13 +27,6 @@ class Teacher(Address):
     def __str__(self):
         return self.firstName + " " + self.lastName
 
-    def json(self):
-        return [{
-            'firstName': self.firstName,
-            'lastName': self.lastName,
-            'email': self.email,
-        }]
-
 
 class Student(Address):
     firstName = models.CharField(max_length=100)
@@ -44,10 +37,8 @@ class Student(Address):
     def __str__(self):
         return self.firstName + " " + self.lastName
 
-    def json(self):
-        return ({
-            'firstName': self.firstName,
-            'lastName': self.lastName,
-            'email': self.email,
-        })
 
+class User(models.Model):
+    userName = models.CharField(max_length=99)
+    email = models.CharField(max_length=256)
+    password = models.CharField(max_length=256)
