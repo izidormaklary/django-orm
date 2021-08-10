@@ -101,13 +101,19 @@ def login(request):
     context = {'form': form}
     if form.is_valid():
         user_model = form.save(commit=False)
-        fetched_user = get_object_or_404(User, userName=user_model.userName)
-
-        login_pw = user_model.password
-        hashed_pw = getattr(fetched_user, 'password')
-
-        if check_password(login_pw, hashed_pw):
-            return HttpResponse('<h1>You are logged in</h1>')
+        print("user")
+        fetched_user = User.objects.filter(userName=user_model.userName)
+        # first checking whether user exists
+        if fetched_user:
+            # getting password password from the form, then the hashed from the query
+            login_pw = user_model.password
+            hashed_pw = getattr(fetched_user, 'password')
+            # crosschecking passwords
+            if check_password(login_pw, hashed_pw):
+                # login success
+                # todo put the user in session with giving id
+                return HttpResponse('<h1>You are logged in</h1>')
+            #
         context = {'form': form, 'error': "wrong username or password"}
     template = loader.get_template('user/login.html')
     return HttpResponse(template.render(context, request))
